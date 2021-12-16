@@ -1,10 +1,7 @@
 package com.furlam.food.domain.service;
 
 import com.furlam.food.domain.exception.RestauranteNaoEncontradoException;
-import com.furlam.food.domain.model.Cidade;
-import com.furlam.food.domain.model.Cozinha;
-import com.furlam.food.domain.model.FormaPagamento;
-import com.furlam.food.domain.model.Restaurante;
+import com.furlam.food.domain.model.*;
 import com.furlam.food.domain.repository.RestauranteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CadastroRestauranteService {
-
-//	private static final String MSG_RESTAURANTE_EM_USO = "Restaurante de código %d não pode ser removida, pois está em uso";
 
     @Autowired
     private RestauranteRepository restauranteRepository;
@@ -27,6 +22,9 @@ public class CadastroRestauranteService {
     @Autowired
     private CadastroFormaPagamentoService cadastroFormaPagamento;
 
+    @Autowired
+    private CadastroUsuarioService cadastroUsuario;
+
     public Restaurante salvar(Restaurante restaurante) {
         Long cozinhaId = restaurante.getCozinha().getId();
         Long cidadeId = restaurante.getEndereco().getCidade().getId();
@@ -39,17 +37,6 @@ public class CadastroRestauranteService {
 
         return restauranteRepository.save(restaurante);
     }
-
-//	public void excluir(Long restauranteId) {
-//		try {
-//			restauranteRepository.deleteById(restauranteId);
-//		} catch (EmptyResultDataAccessException e) {
-//			throw new EntidadeNaoEncontradaException(String.format(MSG_RESTAURANTE_NAO_ENCONTRADO, restauranteId));
-//		} catch (DataIntegrityViolationException e) {
-//			throw new EntidadeEmUsoException(String.format(MSG_RESTAURANTE_EM_USO, restauranteId));
-//		}
-//
-//	}
 
     @Transactional
     public void abrir(Long restauranteId) {
@@ -93,6 +80,22 @@ public class CadastroRestauranteService {
         FormaPagamento formaPagamento = cadastroFormaPagamento.buscarOuFalhar(formaPagamentoId);
 
         restaurante.adicionarFormaPagamento(formaPagamento);
+    }
+
+    @Transactional
+    public void desassociarResponsavel(Long restauranteId, Long usuarioId) {
+        Restaurante restaurante = buscarOuFalhar(restauranteId);
+        Usuario usuario = cadastroUsuario.buscarOuFalhar(usuarioId);
+
+        restaurante.removerResponsavel(usuario);
+    }
+
+    @Transactional
+    public void associarResponsavel(Long restauranteId, Long usuarioId) {
+        Restaurante restaurante = buscarOuFalhar(restauranteId);
+        Usuario usuario = cadastroUsuario.buscarOuFalhar(usuarioId);
+
+        restaurante.adicionarResponsavel(usuario);
     }
 
     public Restaurante buscarOuFalhar(Long restauranteId) {
