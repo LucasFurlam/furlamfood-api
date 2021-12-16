@@ -10,6 +10,7 @@ import com.furlam.food.core.validation.ValidacaoException;
 import com.furlam.food.domain.exception.CidadeNaoEncontradoException;
 import com.furlam.food.domain.exception.CozinhaNaoEncontradoException;
 import com.furlam.food.domain.exception.NegocioException;
+import com.furlam.food.domain.exception.RestauranteNaoEncontradoException;
 import com.furlam.food.domain.model.Restaurante;
 import com.furlam.food.domain.repository.RestauranteRepository;
 import com.furlam.food.domain.service.CadastroRestauranteService;
@@ -85,12 +86,6 @@ public class RestauranteController {
         }
     }
 
-//	@DeleteMapping("/{restauranteId}")
-//	@ResponseStatus(HttpStatus.NO_CONTENT)
-//	public void remover(@PathVariable Long restauranteId) {
-//		cadastroRestaurante.excluir(restauranteId);
-//	}
-
     @PutMapping("/{restaurantId}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void ativar(@PathVariable Long restaurantId) {
@@ -160,6 +155,26 @@ public class RestauranteController {
             throw new HttpMessageNotReadableException(e.getMessage(), rootCause, serverHttpRequest);
         }
 
+    }
+
+    @PutMapping("/ativacoes")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void ativarMultiplos(@RequestBody List<Long> restauranteIds) {
+        try {
+            cadastroRestaurante.ativar(restauranteIds);
+        } catch (RestauranteNaoEncontradoException e) {
+            throw new NegocioException(e.getMessage(), e);
+        }
+    }
+
+    @DeleteMapping("/ativacoes")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void inativarMultiplos(@RequestBody List<Long> restauranteIds) {
+        try {
+            cadastroRestaurante.inativar(restauranteIds);
+        } catch (RestauranteNaoEncontradoException e) {
+            throw new NegocioException(e.getMessage(), e);
+        }
     }
 
 }
