@@ -1,7 +1,9 @@
 package com.furlam.food.api.controller;
 
 import com.furlam.food.api.assembler.PedidoModelAssembler;
+import com.furlam.food.api.assembler.PedidoResumoModelAssembler;
 import com.furlam.food.api.model.PedidoModel;
+import com.furlam.food.api.model.PedidoResumoModel;
 import com.furlam.food.domain.model.Pedido;
 import com.furlam.food.domain.repository.PedidoRepository;
 import com.furlam.food.domain.service.EmissaoPedidoService;
@@ -26,11 +28,14 @@ public class PedidoController {
     @Autowired
     private PedidoModelAssembler pedidoModelAssembler;
 
+    @Autowired
+    private PedidoResumoModelAssembler pedidoResumoModelAssembler;
+
     @GetMapping
-    public List<PedidoModel> listar() {
+        public List<PedidoResumoModel> listar() {
         List<Pedido> todosPedidos = pedidoRepository.findAll();
 
-        return pedidoModelAssembler.toCollectionModel(todosPedidos);
+        return pedidoResumoModelAssembler.toCollectionModel(todosPedidos);
     }
 
     @GetMapping("/{pedidoId}")
